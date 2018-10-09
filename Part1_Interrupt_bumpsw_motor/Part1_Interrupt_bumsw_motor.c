@@ -34,6 +34,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 #include "Clock.h"
 #include "SysTick.h"
 #include "CortexM.h"
+#include "motor.h"
 
 // Color    LED(s) Port2
 // dark     ---    0
@@ -186,24 +187,18 @@ void Switch_Init(void){
 
 int main(void){
 
-  Clock_Init48MHz();
-  Switch_Init();
-  SysTick_Init();
+  Clock_Init48MHz();        // Initialise clock with 48MHz frequency
+  Switch_Init();            // Initialise switch
+  SysTick_Init();           /// Initialise SysTick timer
 
-  // waiting for SW2 switch (on the right side of the LaunchPad board)
-  while(!SW2IN){
+  while(!SW2IN){            // waiting for SW2 switch (on the right side of the board)
       SysTick_Wait10ms(1);
   }
 
-  BumpEdgeTrigger_Init();
-
-  // initialize P1.1 and P1.4 and make them inputs (P1.1 and P1.4 built-in buttons)
-  Port1_Init();
-
-  // initialize P2.2-P2.0 and make them outputs (P2.2-P2.0 built-in LEDs)
-  Port2_Init();
-
-  EnableInterrupts();       // clear the I bit
+  BumpEdgeTrigger_Init();   // Initialise bump switches using edge interrupt
+  Port1_Init();             // Initialize P1.1 and P1.4 built-in buttons
+  Port2_Init();             // Initialize P2.2-P2.0 built-in LEDs
+  EnableInterrupts();       // Clear the I bit
 
   // Run forever
   while(1){
