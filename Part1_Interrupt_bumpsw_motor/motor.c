@@ -1,21 +1,4 @@
-// MotorSimple.c
-// Runs on MSP432
-// Provide mid-level functions that initialize ports and
-// set motor speeds to move the robot.
-// Starter code for Lab 12, uses Systick software delay to create PWM
-// Daniel Valvano
-// July 7, 2017
-
-/* This example accompanies the books
-   "Embedded Systems: Introduction to the MSP432 Microcontroller",
-       ISBN: 978-1512185676, Jonathan Valvano, copyright (c) 2017
-   "Embedded Systems: Real-Time Interfacing to the MSP432 Microcontroller",
-       ISBN: 978-1514676585, Jonathan Valvano, copyright (c) 2017
-   "Embedded Systems: Real-Time Operating Systems for ARM Cortex-M Microcontrollers",
-       ISBN: 978-1466468863, , Jonathan Valvano, copyright (c) 2017
- For more information about my classes, my research, and my books, see
- http://users.ece.utexas.edu/~valvano/
-
+/*
 Simplified BSD License (FreeBSD License)
 Copyright (c) 2017, Jonathan Valvano, All rights reserved.
 
