@@ -229,6 +229,6 @@ int main(void){
 
   // Run forever
   while(1){
-      Motor_ForwardSimple(500, 100000);
+      Motor_ForwardSimple(500, 1);
   }
 }
