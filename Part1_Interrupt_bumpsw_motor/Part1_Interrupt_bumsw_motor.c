@@ -224,7 +224,7 @@ int main(void){
   BumpEdgeTrigger_Init();   // Initialise bump switches using edge interrupt
   Motor_InitSimple();       // Initialise DC Motor
   Port2_Init();             // Initialise P2.2-P2.0 built-in LEDs
-  Port2_Output(WHITE);      // White is the colour to represent moving forward
+  Port2_Output(WHITE);      // White is depicted as moving forward
   EnableInterrupts();       // Clear the I bit
 
   // Run forever
