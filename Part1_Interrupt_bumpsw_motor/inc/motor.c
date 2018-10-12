@@ -41,8 +41,8 @@ policies, either expressed or implied, of the FreeBSD Project.
 // Author:      Mohd A. Zainol
 // Date:        1 Oct 2018
 // Chip:        MSP432P401R LaunchPad Development Kit (MSP-EXP432P401R) for TI-RSLK
-// File:        motor.h
-// Function:    header file of motor.c
+// File:        motor.c
+// Function:    File for operating the DC motors
 
 #include <stdint.h>
 #include "msp.h"
