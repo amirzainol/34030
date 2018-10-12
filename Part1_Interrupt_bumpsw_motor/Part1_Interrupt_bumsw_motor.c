@@ -26,7 +26,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 // Author:      Mohd A. Zainol, Reza Nejabati
 // Date:        10/10/2018
 // Chip:        MSP432P401R LaunchPad Development Kit (MSP-EXP432P401R) for TI-RSLK
-// File:        Part1_Interrupt_bumpsw_motor.h
+// File:        Part1_Interrupt_bumpsw_motor.c
 // Function:    Part 1 of ERTS, uses interrupt for bump switches to control the motor
 
 #include <stdint.h>
