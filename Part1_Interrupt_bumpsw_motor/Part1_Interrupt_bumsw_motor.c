@@ -26,7 +26,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 // Author:      Mohd A. Zainol, Reza Nejabati
 // Date:        10/10/2018
 // Chip:        MSP432P401R LaunchPad Development Kit (MSP-EXP432P401R) for TI-RSLK
-// File:        Part1_Interrupt_bumpsw_motor.c
+// File:        Part1_Interrupt_bumpsw_motor.h
 // Function:    Part 1 of ERTS, uses interrupt for bump switches to control the motor
 
 #include <stdint.h>
@@ -67,7 +67,6 @@ void BumpEdgeTrigger_Init(void){
     P4->IES |= 0xED;        // falling edge event
     P4->IFG &= ~0xED;       // clear flag
     P4->IE |= 0xED;         // arm the interrupt
-
     // priority 2 on port4
     NVIC->IP[9] = (NVIC->IP[9]&0xFF00FFFF)|0x00400000;
     // enable interrupt 38 in NVIC on port4
@@ -90,6 +89,7 @@ void PORT4_IRQHandler(void){
       status = P4->IV;      // 2*(n+1) where n is highest priority
 
       switch(status){
+
         case 0x02: // Bump switch 1
             Port2_Output(GREEN);
             // Move backward at 500 duty for 1000ms
@@ -154,10 +154,11 @@ void PORT4_IRQHandler(void){
             Port2_Output(0);
             Motor_StopSimple(100);
           break;
-        case 0xED: // neither switch pressed
 
+        case 0xED: // none of the switches are pressed
           break;
       }
+
       P4->IFG &= ~0xED; // clear flag
 }
 
@@ -173,6 +174,91 @@ uint8_t Bump_Read_Input(void){
   return (P4->IN&0xED); // read P4.7, 4.6, 4.5, 4.3, 4.2, 4.0 inputs
 }
 
+void checkbumpswitch(uint8_t status)
+{
+    switch(status){
+      //case 0x02: // Bump switch 1
+        case 0x6D: // Bump 1
+          Port2_Output(0);
+          Port2_Output(GREEN);
+          // Move backward at 500 duty for 1000ms
+          Motor_BackwardSimple(500, 100);
+          Port2_Output(0);
+          // Stop for 1000ms
+          Motor_StopSimple(100);
+          Port2_Output(YELLOW);
+          // Make a left turn at 500 duty for 500ms
+          Motor_LeftSimple(500, 50);
+          Port2_Output(0);
+          // Stop for 1000ms
+          Motor_StopSimple(100);
+        break;
+      //case 0x06: // Bump switch 2
+        case 0xAD: // Bump 2
+          Port2_Output(0);
+          Port2_Output(GREEN);
+          Motor_BackwardSimple(500, 100);
+          Port2_Output(0);
+          Motor_StopSimple(100);
+          Port2_Output(YELLOW);
+          Motor_LeftSimple(500, 100);
+          Port2_Output(0);
+          Motor_StopSimple(100);
+        break;
+      //case 0x08: // Bump switch 3
+        case 0xCD: // Bump 3
+          Port2_Output(0);
+          Port2_Output(GREEN);
+          Motor_BackwardSimple(500, 100);
+          Port2_Output(0);
+          Motor_StopSimple(100);
+          Port2_Output(YELLOW);
+          Motor_LeftSimple(500, 150);
+          Port2_Output(0);
+          Motor_StopSimple(100);
+        break;
+      //case 0x0C: // Bump switch 4
+        case 0xE5: // Bump 4
+          Port2_Output(0);
+          Port2_Output(GREEN);
+          Motor_BackwardSimple(500, 100);
+          Port2_Output(0);
+          Motor_StopSimple(100);
+          Port2_Output(BLUE);
+          Motor_RightSimple(500, 150);
+          Port2_Output(0);
+          Motor_StopSimple(100);
+        break;
+      //case 0x0E: // Bump switch 5
+        case 0xE9: // Bump 5
+          Port2_Output(0);
+          Port2_Output(GREEN);
+          Motor_BackwardSimple(500, 100);
+          Port2_Output(0);
+          Motor_StopSimple(100);
+          Port2_Output(BLUE);
+          Motor_RightSimple(500, 100);
+          Port2_Output(0);
+          Motor_StopSimple(100);
+        break;
+      //case 0x10: // Bump switch 6
+        case 0xEC: // Bump 6
+          Port2_Output(0);
+          Port2_Output(GREEN);
+          Motor_BackwardSimple(500, 100);
+          Port2_Output(0);
+          Motor_StopSimple(100);
+          Port2_Output(BLUE);
+          Motor_RightSimple(500, 50);
+          Port2_Output(0);
+          Motor_StopSimple(100);
+        break;
+      case 0xED: // neither switch pressed
+
+        break;
+    }
+}
+
 void Port1_Init(void){
   P1->SEL0 &= ~0x01;
   P1->SEL1 &= ~0x01;        // configure P1.0 as GPIO
@@ -185,7 +271,7 @@ void Port2_Init(void){
     P2->DIR |= 0x07;          // make P2.2-P2.0 out
     P2->DS |= 0x07;           // activate increased drive strength
     P2->OUT &= ~0x07;         // all LEDs off
-    P2->DIR |= 0xC0;          // Dirction of the motor
+    P2->DIR |= 0xC0;          // Direction of the motor
 }
 
 void Port2_Output(uint8_t data){
@@ -211,24 +297,40 @@ void Switch_Init(void){
 #define REDLED (*((volatile uint8_t *)(0x42098040)))
 
 int main(void){
+    uint8_t status;
 
   Clock_Init48MHz();        // Initialise clock with 48MHz frequency
-  Switch_Init();            // Initialise switch
+  Switch_Init();            // Initialise switches
   SysTick_Init();           // Initialise SysTick timer
   Port1_Init();             // Initialise P1.1 and P1.4 built-in buttons
-  while(!SW2IN){            // Waiting for SW2 switch (on the right side of the board)
-      SysTick_Wait10ms(50); // Waiting here for every 500ms
+  while(!SW2IN){            // Wait for SW2 switch
+      SysTick_Wait10ms(10); // Wait here for every 100ms
       REDLED = !REDLED;     // The red LED is blinking waiting for command
   }
   REDLED = 0;               // Turn off the red LED
   BumpEdgeTrigger_Init();   // Initialise bump switches using edge interrupt
-  Motor_InitSimple();       // Initialise DC Motor
+
   Port2_Init();             // Initialise P2.2-P2.0 built-in LEDs
-  Port2_Output(WHITE);      // White is depicted as moving forward
+  Port2_Output(WHITE);      // White is the colour to represent moving forward
+  Motor_InitSimple();       // Initialise DC Motor
+  Motor_StopSimple(100);    // Stop the motor on initial state
+
   EnableInterrupts();       // Clear the I bit
 
   // Run forever
   while(1){
-      Motor_ForwardSimple(500, 1);
+
+      __no_operation();
+
+      
+/*
+        status = Bump_Read_Input();
+        if (status == 0x6D || status == 0xAD || status == 0xCD || status == 0xE5 || status == 0xE9 || status == 0xEC) {
+            checkbumpswitch(status);
+        }
+*/
+
+      //Motor_ForwardSimple(500, 1);
+
   }
 }
