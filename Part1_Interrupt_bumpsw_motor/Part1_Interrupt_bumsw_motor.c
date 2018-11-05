@@ -31,10 +31,6 @@ policies, either expressed or implied, of the FreeBSD Project.
 
 #include <stdint.h>
 #include "msp.h"
-#include "../inc/Clock.h"
-#include "../inc/SysTick.h"
-#include "../inc/CortexM.h"
-#include "../inc/motor.h"
 
 // Color    LED(s) Port2
 // dark     ---    0
